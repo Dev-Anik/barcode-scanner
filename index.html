@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+</head>
+
+<body>
+    <h1>Barcode Scanner</h1>
+    <button id="scanButton">Scan Barcode</button>
+    <div id="result"></div>
+
+    <script>
+        // Function to initialize the barcode scanner
+        function initBarcodeScanner() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#result') // Selector for the element where you want to display the result
+                },
+                decoder: {
+                    readers: ["ean_reader", "upc_reader", "code_128_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader", "i2of5_reader", "2of5_reader", "code_93_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+        }
+
+        // Function to stop the barcode scanner
+        function stopBarcodeScanner() {
+            Quagga.stop();
+        }
+
+        // Event listener for the "Scan Barcode" button
+        document.getElementById('scanButton').addEventListener('click', function () {
+            initBarcodeScanner();
+        });
+
+        // Event listener for when a barcode is detected
+        Quagga.onDetected(function (result) {
+            var code = result.codeResult.code;
+            document.getElementById('result').innerText = "Barcode detected: " + code;
+            stopBarcodeScanner(); // Stop the scanner after detecting a barcode
+        });
+    </script>
+</body>
+
+</html>
